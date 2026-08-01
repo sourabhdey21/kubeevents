@@ -24,9 +24,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: kubeevents
-          # Build locally: docker build -t kubeevents:0.1.0 .
-          # Or push to your registry and update this image.
-          image: kubeevents:0.1.0
+          image: sourabhdey21700/kubeevents:0.1.0
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
