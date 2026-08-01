@@ -9,8 +9,17 @@ A Secret with your Telegram bot token and chat ID was created.
 {{- end }}
 
 Web UI:
-  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "kubeevents.fullname" . }} 8080:{{ .Values.service.port }}
+{{- if eq .Values.service.type "LoadBalancer" }}
+  Wait for an external IP, then open it in your browser:
+    kubectl get svc {{ include "kubeevents.fullname" . }} -n {{ .Release.Namespace }} -w
+  URL: http://<EXTERNAL-IP>:{{ .Values.service.port }}
+{{- else if eq .Values.service.type "NodePort" }}
+  Use a node IP with the NodePort assigned to the service.
+{{- else }}
+  Port-forward:
+    kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "kubeevents.fullname" . }} 8080:{{ .Values.service.port }}
   Then open http://127.0.0.1:8080
+{{- end }}
 
 Check status:
   kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}

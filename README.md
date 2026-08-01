@@ -29,13 +29,23 @@ Error: ImagePullBackOff
 
 ## Web UI
 
-KubeEvents ships with a live web console. After install:
+KubeEvents ships with a live web console exposed via a **LoadBalancer** Service by default.
 
 ```bash
-kubectl -n kubeevents port-forward svc/kubeevents 8080:80
+# Watch until EXTERNAL-IP is assigned
+kubectl get svc kubeevents -n kubeevents -w
 ```
 
-Open [http://127.0.0.1:8080](http://127.0.0.1:8080) to browse events with filters, search, and live updates (SSE).
+Open `http://<EXTERNAL-IP>` in your browser.
+
+If your cluster has no LoadBalancer (e.g. local kind), switch to port-forward or NodePort:
+
+```bash
+helm upgrade kubeevents ./deploy/helm/kubeevents -n kubeevents \
+  --reuse-values --set service.type=ClusterIP
+
+kubectl -n kubeevents port-forward svc/kubeevents 8080:80
+```
 
 Optional Ingress:
 

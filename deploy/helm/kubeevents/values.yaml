@@ -51,9 +51,11 @@ watch:
 # Web UI service
 service:
   enabled: true
-  type: ClusterIP
+  type: LoadBalancer
   port: 80
-  # Use NodePort or LoadBalancer for external access without Ingress
+  # Optional annotations for cloud load balancers (AWS/GCP/Azure)
+  annotations: {}
+  # For NodePort instead:
   # type: NodePort
   # nodePort: 30080
 

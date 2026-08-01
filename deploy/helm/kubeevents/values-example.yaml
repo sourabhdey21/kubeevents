@@ -22,3 +22,7 @@ watch:
   dedupWindow: 2m
   maxMessagesPerMinute: 20
   sendStartupMessage: true
+
+service:
+  type: LoadBalancer
+  port: 80
