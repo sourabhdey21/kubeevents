@@ -42,8 +42,11 @@ type Config struct {
 	// Include a startup ping to Telegram
 	SendStartupMessage bool
 
-	// HTTP listen address for health probes
+	// HTTP listen address for health probes and web UI
 	HealthAddr string
+
+	// Max events retained for the web UI
+	UIEventCapacity int
 
 	// Resync period for the informer
 	ResyncPeriod time.Duration
@@ -64,6 +67,7 @@ func Load() (*Config, error) {
 		MaxMessagesPerMinute: envInt("MAX_MESSAGES_PER_MINUTE", 30),
 		SendStartupMessage:   envBool("SEND_STARTUP_MESSAGE", true),
 		HealthAddr:           envOr("HEALTH_ADDR", ":8080"),
+		UIEventCapacity:      envInt("UI_EVENT_CAPACITY", 500),
 		ResyncPeriod:         envDuration("RESYNC_PERIOD", 0),
 	}
 

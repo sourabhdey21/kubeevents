@@ -8,6 +8,10 @@ KubeEvents installed.
 A Secret with your Telegram bot token and chat ID was created.
 {{- end }}
 
+Web UI:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "kubeevents.fullname" . }} 8080:{{ .Values.service.port }}
+  Then open http://127.0.0.1:8080
+
 Check status:
   kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}
 

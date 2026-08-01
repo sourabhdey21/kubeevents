@@ -24,8 +24,8 @@ spec:
           type: RuntimeDefault
       containers:
         - name: kubeevents
-          image: sourabhdey21700/kubeevents:0.1.0
-          imagePullPolicy: IfNotPresent
+          image: sourabhdey21700/kubeevents:0.2.0
+          imagePullPolicy: Always
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true

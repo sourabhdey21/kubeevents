@@ -27,6 +27,29 @@ Error: ImagePullBackOff
 
 ---
 
+## Web UI
+
+KubeEvents ships with a live web console. After install:
+
+```bash
+kubectl -n kubeevents port-forward svc/kubeevents 8080:80
+```
+
+Open [http://127.0.0.1:8080](http://127.0.0.1:8080) to browse events with filters, search, and live updates (SSE).
+
+Optional Ingress:
+
+```bash
+helm upgrade --install kubeevents ./deploy/helm/kubeevents \
+  -n kubeevents --create-namespace \
+  --set telegram.botToken="$TELEGRAM_BOT_TOKEN" \
+  --set telegram.chatId="$TELEGRAM_CHAT_ID" \
+  --set ingress.enabled=true \
+  --set ingress.hosts[0].host=kubeevents.example.com
+```
+
+---
+
 ## 1. Create a Telegram bot & channel
 
 1. Open Telegram and chat with [@BotFather](https://t.me/BotFather)
@@ -52,11 +75,8 @@ Keep both values ready:
 
 ```bash
 # From this repository root
-docker build -t kubeevents:0.1.0 .
-
-# Optional: push to your registry
-docker tag kubeevents:0.1.0 your-registry.example.com/kubeevents:0.1.0
-docker push your-registry.example.com/kubeevents:0.1.0
+docker build -t sourabhdey21700/kubeevents:0.2.0 .
+docker tag sourabhdey21700/kubeevents:0.2.0 sourabhdey21700/kubeevents:latest
 ```
 
 If your cluster cannot pull from your laptop, load the image into the cluster (kind / minikube / k3s examples):
@@ -82,8 +102,9 @@ helm upgrade --install kubeevents ./deploy/helm/kubeevents \
   --set telegram.botToken="$TELEGRAM_BOT_TOKEN" \
   --set telegram.chatId="$TELEGRAM_CHAT_ID" \
   --set clusterName="my-cluster" \
-  --set image.repository=kubeevents \
-  --set image.tag=0.1.0
+  --set image.repository=sourabhdey21700/kubeevents \
+  --set image.tag=0.2.0 \
+  --set image.pullPolicy=Always
 ```
 
 Or use a values file (see `deploy/helm/kubeevents/values-example.yaml`):
@@ -120,11 +141,7 @@ sed -i 's|REPLACE_WITH_CHAT_ID|'"$TELEGRAM_CHAT_ID"'|' deploy/kubernetes/secret.
 #    deploy/kubernetes/deployment.yaml
 
 # 4) Apply
-kubectl apply -f deploy/kubernetes/namespace.yaml
-kubectl apply -f deploy/kubernetes/rbac.yaml
-kubectl apply -f deploy/kubernetes/secret.yaml
-kubectl apply -f deploy/kubernetes/configmap.yaml
-kubectl apply -f deploy/kubernetes/deployment.yaml
+kubectl apply -f deploy/kubernetes/
 ```
 
 ---

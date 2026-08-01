@@ -14,4 +14,5 @@ data:
   DEDUP_WINDOW: {{ .Values.watch.dedupWindow | quote }}
   MAX_MESSAGES_PER_MINUTE: {{ .Values.watch.maxMessagesPerMinute | quote }}
   SEND_STARTUP_MESSAGE: {{ .Values.watch.sendStartupMessage | quote }}
+  UI_EVENT_CAPACITY: {{ .Values.watch.uiEventCapacity | quote }}
   HEALTH_ADDR: ":8080"

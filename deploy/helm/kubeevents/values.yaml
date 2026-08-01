@@ -5,8 +5,8 @@ replicaCount: 1
 
 image:
   repository: sourabhdey21700/kubeevents
-  tag: "0.1.0"
-  pullPolicy: IfNotPresent
+  tag: "0.2.0"
+  pullPolicy: Always
 
 imagePullSecrets: []
 nameOverride: ""
@@ -24,7 +24,7 @@ telegram:
   botTokenKey: TELEGRAM_BOT_TOKEN
   chatIdKey: TELEGRAM_CHAT_ID
 
-# Display name shown in Telegram messages
+# Display name shown in Telegram messages and the web UI
 clusterName: kubernetes
 
 # Watch settings
@@ -38,13 +38,35 @@ watch:
   # Comma-separated kinds, e.g. Pod,Deployment,Service,Node,Job
   # Empty = all kinds
   resourceKinds: ""
-  # Drop noisy Normal events (Pulling, Scheduled, etc.)
+  # Drop noisy Normal events (Pulling, Scheduled, etc.) from Telegram
   skipNoisyNormals: true
   # Deduplicate identical messages within this duration
   dedupWindow: 2m
   # Rate limit Telegram sends
   maxMessagesPerMinute: 30
   sendStartupMessage: true
+  # Events retained for the web console
+  uiEventCapacity: 500
+
+# Web UI service
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+  # Use NodePort or LoadBalancer for external access without Ingress
+  # type: NodePort
+  # nodePort: 30080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: kubeevents.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
 
 serviceAccount:
   create: true
@@ -62,7 +84,7 @@ resources:
     memory: 64Mi
   limits:
     cpu: 200m
-    memory: 128Mi
+    memory: 192Mi
 
 nodeSelector: {}
 tolerations: []

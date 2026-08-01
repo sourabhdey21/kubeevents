@@ -15,8 +15,10 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/klog/v2"
 
+	"github.com/kubeevents/kubeevents/internal/api"
 	"github.com/kubeevents/kubeevents/internal/config"
 	"github.com/kubeevents/kubeevents/internal/notifier"
+	"github.com/kubeevents/kubeevents/internal/store"
 	"github.com/kubeevents/kubeevents/internal/watcher"
 )
 
@@ -43,25 +45,17 @@ func main() {
 	}
 
 	tg := notifier.NewTelegram(cfg)
+	eventStore := store.New(cfg.UIEventCapacity)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
 
-	// Health endpoints for Kubernetes probes
-	mux := http.NewServeMux()
-	mux.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("ok"))
-	})
-	mux.HandleFunc("/readyz", func(w http.ResponseWriter, _ *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("ready"))
-	})
-	srv := &http.Server{Addr: cfg.HealthAddr, Handler: mux}
+	apiServer := api.New(eventStore, cfg.ClusterName, cfg.Namespace)
+	srv := &http.Server{Addr: cfg.HealthAddr, Handler: apiServer.Handler()}
 	go func() {
-		klog.InfoS("health server listening", "addr", cfg.HealthAddr)
+		klog.InfoS("web UI and API listening", "addr", cfg.HealthAddr)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			klog.ErrorS(err, "health server failed")
+			klog.ErrorS(err, "http server failed")
 			cancel()
 		}
 	}()
@@ -85,9 +79,10 @@ func main() {
 		"namespace", ns,
 		"minSeverity", cfg.MinSeverity,
 		"skipNoisyNormals", cfg.SkipNoisyNormals,
+		"uiCapacity", cfg.UIEventCapacity,
 	)
 
-	ew := watcher.New(client, cfg, tg)
+	ew := watcher.New(client, cfg, tg, eventStore)
 	if err := ew.Run(ctx); err != nil && err != context.Canceled {
 		klog.ErrorS(err, "watcher stopped with error")
 		os.Exit(1)
@@ -100,7 +95,6 @@ func main() {
 }
 
 func buildKubeConfig() (*rest.Config, error) {
-	// Prefer in-cluster config when running inside Kubernetes.
 	if cfg, err := rest.InClusterConfig(); err == nil {
 		return cfg, nil
 	}
