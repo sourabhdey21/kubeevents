@@ -10,9 +10,9 @@ telegram:
 clusterName: prod-cluster
 
 image:
-  repository: your-registry.example.com/kubeevents
-  tag: "0.1.0"
-  pullPolicy: IfNotPresent
+  repository: sourabhdey21700/kubeevents
+  tag: "0.2.0"
+  pullPolicy: Always
 
 watch:
   namespace: ""           # all namespaces
