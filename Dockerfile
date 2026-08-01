@@ -5,12 +5,11 @@ WORKDIR /src
 
 RUN apk add --no-cache git ca-certificates
 
-COPY go.mod go.sum* ./
-RUN go mod download || true
+COPY go.mod go.sum ./
+RUN go mod download
 
 COPY . .
-RUN go mod tidy && \
-    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     go build -trimpath -ldflags="-s -w" -o /out/kubeevents ./cmd/kubeevents
 
 FROM gcr.io/distroless/static-debian12:nonroot

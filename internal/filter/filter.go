@@ -11,21 +11,16 @@ import (
 )
 
 // Noisy Normal reasons that flood Telegram if left unfiltered.
+// Create/delete lifecycle reasons (Created, Started, Killing, SuccessfulCreate,
+// SuccessfulDelete) are intentionally kept so users see resource activity.
 var noisyNormalReasons = map[string]struct{}{
-	"Pulling":            {},
-	"Pulled":             {},
-	"Created":            {},
-	"Started":            {},
-	"Scheduled":          {},
-	"SuccessfulCreate":   {},
-	"SuccessfulDelete":   {},
-	"ScalingReplicaSet":  {},
-	"Killing":            {},
-	"ProbeWarning":       {},
-	"LeaderElection":     {},
-	"NodeReady":          {},
-	"NodeHasSufficient":  {},
-	"NodeAllocatable":    {},
+	"Pulling":           {},
+	"Pulled":            {},
+	"Scheduled":         {},
+	"ScalingReplicaSet": {},
+	"ProbeWarning":      {},
+	"LeaderElection":    {},
+	"NodeReady":         {},
 }
 
 // Filter decides whether an event should be notified and deduplicates repeats.
