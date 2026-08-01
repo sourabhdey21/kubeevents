@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubeevents
+  namespace: kubeevents
+  labels:
+    app.kubernetes.io/name: kubeevents
+data:
+  CLUSTER_NAME: "my-cluster"
+  # Empty = watch all namespaces
+  WATCH_NAMESPACE: ""
+  # "all" or "warning"
+  MIN_SEVERITY: "all"
+  EVENT_TYPES: ""
+  # Examples: Pod,Deployment,ReplicaSet,Service,Node,Job,StatefulSet,DaemonSet
+  RESOURCE_KINDS: ""
+  SKIP_NOISY_NORMALS: "true"
+  DEDUP_WINDOW: "2m"
+  MAX_MESSAGES_PER_MINUTE: "30"
+  SEND_STARTUP_MESSAGE: "true"
+  HEALTH_ADDR: ":8080"

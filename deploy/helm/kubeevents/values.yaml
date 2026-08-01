@@ -1,0 +1,100 @@
+# Default values for kubeevents.
+# Override telegram.* at install time — never commit real tokens.
+
+replicaCount: 1
+
+image:
+  repository: kubeevents
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# Telegram credentials (prefer --set or --set-file / external secret)
+telegram:
+  botToken: ""
+  chatId: ""
+  # If true, create a Secret from the values above.
+  # Set to false when providing an existing secret (existingSecret).
+  createSecret: true
+  existingSecret: ""
+  # Keys inside the existing secret
+  botTokenKey: TELEGRAM_BOT_TOKEN
+  chatIdKey: TELEGRAM_CHAT_ID
+
+# Display name shown in Telegram messages
+clusterName: kubernetes
+
+# Watch settings
+watch:
+  # Empty or "*" = all namespaces
+  namespace: ""
+  # "all" = Normal + Warning; "warning" = Warning only
+  minSeverity: all
+  # Comma-separated: Normal,Warning (empty = both)
+  eventTypes: ""
+  # Comma-separated kinds, e.g. Pod,Deployment,Service,Node,Job
+  # Empty = all kinds
+  resourceKinds: ""
+  # Drop noisy Normal events (Pulling, Scheduled, etc.)
+  skipNoisyNormals: true
+  # Deduplicate identical messages within this duration
+  dedupWindow: 2m
+  # Rate limit Telegram sends
+  maxMessagesPerMinute: 30
+  sendStartupMessage: true
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+rbac:
+  create: true
+  # ClusterRole when watching all namespaces; Role when namespace-scoped
+  clusterWide: true
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 20
+
+readinessProbe:
+  httpGet:
+    path: /readyz
+    port: http
+  initialDelaySeconds: 3
+  periodSeconds: 10

@@ -1,0 +1,24 @@
+# Example overrides — copy and fill in, do not commit secrets.
+#
+#   helm upgrade --install kubeevents deploy/helm/kubeevents \
+#     -n kubeevents --create-namespace -f my-values.yaml
+
+telegram:
+  botToken: "123456:ABC-DEF..."
+  chatId: "-1001234567890"
+
+clusterName: prod-cluster
+
+image:
+  repository: your-registry.example.com/kubeevents
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+watch:
+  namespace: ""           # all namespaces
+  minSeverity: warning  # only Warning events (recommended for busy clusters)
+  resourceKinds: "Pod,Deployment,ReplicaSet,Service,Node,Job,StatefulSet,DaemonSet"
+  skipNoisyNormals: true
+  dedupWindow: 2m
+  maxMessagesPerMinute: 20
+  sendStartupMessage: true

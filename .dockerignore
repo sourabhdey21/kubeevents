@@ -1,0 +1,11 @@
+.git
+.gitignore
+*.md
+bin/
+deploy/
+.github/
+.env
+*.pem
+*.key
+.dockerignore
+Makefile

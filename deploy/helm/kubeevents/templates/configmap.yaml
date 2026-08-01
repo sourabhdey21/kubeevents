@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kubeevents.fullname" . }}
+  labels:
+    {{- include "kubeevents.labels" . | nindent 4 }}
+data:
+  CLUSTER_NAME: {{ .Values.clusterName | quote }}
+  WATCH_NAMESPACE: {{ .Values.watch.namespace | quote }}
+  MIN_SEVERITY: {{ .Values.watch.minSeverity | quote }}
+  EVENT_TYPES: {{ .Values.watch.eventTypes | quote }}
+  RESOURCE_KINDS: {{ .Values.watch.resourceKinds | quote }}
+  SKIP_NOISY_NORMALS: {{ .Values.watch.skipNoisyNormals | quote }}
+  DEDUP_WINDOW: {{ .Values.watch.dedupWindow | quote }}
+  MAX_MESSAGES_PER_MINUTE: {{ .Values.watch.maxMessagesPerMinute | quote }}
+  SEND_STARTUP_MESSAGE: {{ .Values.watch.sendStartupMessage | quote }}
+  HEALTH_ADDR: ":8080"

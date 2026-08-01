@@ -1,0 +1,15 @@
+apiVersion: v2
+name: kubeevents
+description: Watch Kubernetes events and notify a Telegram channel
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - kubernetes
+  - events
+  - telegram
+  - notifications
+  - monitoring
+home: https://github.com/kubeevents/kubeevents
+maintainers:
+  - name: kubeevents

@@ -1,0 +1,20 @@
+{{- if .Values.telegram.existingSecret }}
+KubeEvents installed.
+
+Telegram credentials: secret "{{ .Values.telegram.existingSecret }}"
+{{- else }}
+KubeEvents installed.
+
+A Secret with your Telegram bot token and chat ID was created.
+{{- end }}
+
+Check status:
+  kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}
+
+Watch logs:
+  kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }} -f
+
+You should receive a startup message in your Telegram channel.
+Generate a test event:
+  kubectl run nginx-test --image=nginx -n default
+  kubectl delete pod nginx-test -n default

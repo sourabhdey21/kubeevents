@@ -1,0 +1,58 @@
+{{- if .Values.rbac.create -}}
+{{- if or .Values.rbac.clusterWide (eq .Values.watch.namespace "" ) (eq .Values.watch.namespace "*") }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "kubeevents.fullname" . }}
+  labels:
+    {{- include "kubeevents.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "kubeevents.fullname" . }}
+  labels:
+    {{- include "kubeevents.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "kubeevents.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "kubeevents.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+{{- else }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "kubeevents.fullname" . }}
+  labels:
+    {{- include "kubeevents.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "kubeevents.fullname" . }}
+  labels:
+    {{- include "kubeevents.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "kubeevents.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "kubeevents.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}
+{{- end }}
